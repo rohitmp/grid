@@ -22,6 +22,12 @@ volumes:
   gridd-gamma:
   templates-shared:
   cache-shared:
+  griddb-alpha-postgres-data:
+  griddb-beta-postgres-data:
+  griddb-gamma-postgres-data:
+  splinterdb-alpha-postgres-data:
+  splinterdb-beta-postgres-data:
+  splinterdb-gamma-postgres-data:
 
 services:
   # ---== shared services ==---
@@ -105,8 +111,12 @@ services:
     container_name: db-alpha
     hostname: db-alpha
     restart: always
+    volumes:
+      - griddb-alpha-postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
+    ports:
+      - "54321:5432"
     environment:
       POSTGRES_USER: grid
       POSTGRES_PASSWORD: grid_example
@@ -124,7 +134,7 @@ services:
     expose:
       - 8080
     ports:
-      - "8080:8080"
+      - "18080:8080"
     environment:
       GRID_DAEMON_KEY: "alpha-agent"
       GRID_DAEMON_ENDPOINT: "http://gridd-alpha:8080"
@@ -147,6 +157,7 @@ services:
     container_name: scabbard-cli-alpha
     hostname: scabbard-cli-alpha
     volumes:
+      - contracts-shared:/usr/share/scar
       - gridd-alpha:/root/.splinter/keys
     command: tail -f /dev/null
 
@@ -158,8 +169,8 @@ services:
       - 8044
       - 8085
     ports:
-      - "8044:8044"
-      - "8085:8085"
+      - "18044:8044"
+      - "18085:8085"
     volumes:
       - contracts-shared:/usr/share/scar
       - registry:/registry
@@ -196,8 +207,12 @@ services:
     image: postgres
     container_name: splinter-db-alpha
     restart: always
+    volumes:
+      - splinterdb-alpha-postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
+    ports:
+      - "54322:5432"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
@@ -222,8 +237,12 @@ services:
     container_name: db-beta
     hostname: db-beta
     restart: always
+    volumes:
+      - griddb-beta-postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
+    ports:
+      - "54323:5432"      
     environment:
       POSTGRES_USER: grid
       POSTGRES_PASSWORD: grid_example
@@ -241,7 +260,7 @@ services:
     expose:
       - 8080
     ports:
-      - "8081:8080"
+      - "28080:8080"
     environment:
       GRID_DAEMON_KEY: "beta-agent"
       GRID_DAEMON_ENDPOINT: "http://gridd-beta:8080"
@@ -264,6 +283,7 @@ services:
     container_name: scabbard-cli-beta
     hostname: scabbard-cli-beta
     volumes:
+      - contracts-shared:/usr/share/scar
       - gridd-beta:/root/.splinter/keys
     command: tail -f /dev/null
 
@@ -275,7 +295,7 @@ services:
       - 8044
       - 8085
     ports:
-      - "8045:8044"
+      - "28044:8044"
     volumes:
       - contracts-shared:/usr/share/scar
       - registry:/registry
@@ -312,8 +332,12 @@ services:
     image: postgres
     container_name: splinter-db-beta
     restart: always
+    volumes:
+      - splinterdb-beta-postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
+    ports:
+      - "54324:5432"      
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
@@ -338,8 +362,12 @@ services:
     container_name: db-gamma
     hostname: db-gamma
     restart: always
+    volumes:
+      - griddb-gamma-postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
+    ports:
+      - "54325:5432"      
     environment:
       POSTGRES_USER: grid
       POSTGRES_PASSWORD: grid_example
@@ -357,7 +385,7 @@ services:
     expose:
       - 8080
     ports:
-      - "8082:8080"
+      - "38080:8080"
     environment:
       GRID_DAEMON_KEY: "gamma-agent"
       GRID_DAEMON_ENDPOINT: "http://gridd-gamma:8080"
@@ -374,6 +402,15 @@ services:
         gridd -vv -b 0.0.0.0:8080 -C splinter:http://splinterd-gamma:8085 \
             --database-url postgres://grid:grid_example@db-gamma/grid
       "
+  
+  scabbard-cli-gamma:
+    image: splintercommunity/scabbard-cli:0.4
+    container_name: scabbard-cli-gamma
+    hostname: scabbard-cli-gamma
+    volumes:
+      - contracts-shared:/usr/share/scar
+      - gridd-gamma:/root/.splinter/keys
+    command: tail -f /dev/null
 
   splinterd-gamma:
     image: splintercommunity/splinterd:0.4
@@ -383,7 +420,7 @@ services:
       - 8044
       - 8085
     ports:
-      - "8046:8044"
+      - "38044:8044"
     volumes:
       - contracts-shared:/usr/share/scar
       - registry:/registry
@@ -420,8 +457,12 @@ services:
     image: postgres
     container_name: splinter-db-gamma
     restart: always
+    volumes:
+      - splinterdb-gamma-postgres-data:/var/lib/postgresql/data
     expose:
       - 5432
+    ports:
+      - "54326:5432"      
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
